@@ -14,8 +14,7 @@
 %%% Client API
 %%%===================================================================
 
-start_link() ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 store(Value) ->
     Key = dht_util:hash(Value),
@@ -104,19 +103,15 @@ handle_find_neighbours(From, _HashId, ServerId, {ServerId, ServerPid}) ->
 % Handle wrap-around of the ring...
 handle_find_neighbours(From, HashId, ServerId, {NextId, NextPid}) when NextId < ServerId -> 
     case (HashId > ServerId orelse HashId < NextId) of
-        true -> 
-            From ! {ServerId, self(), NextId, NextPid};
-        false -> 
-            gen_server:cast(NextPid, {find_neighbours, From, HashId})
+        true -> From ! {ServerId, self(), NextId, NextPid};
+        false -> gen_server:cast(NextPid, {find_neighbours, From, HashId})
     end;
 
 % Handle all the other nodes that do not wrap around.
 handle_find_neighbours(From, HashId, ServerId, {NextId, NextPid}) ->
     case (HashId > ServerId andalso HashId < NextId) of
-        true -> 
-            From ! {ServerId, self(), NextId, NextPid};
-        false -> 
-            gen_server:cast(NextPid, {find_neighbours, From, HashId})
+        true -> From ! {ServerId, self(), NextId, NextPid};
+        false -> gen_server:cast(NextPid, {find_neighbours, From, HashId})
     end.
 
 
@@ -128,16 +123,12 @@ handle_key_lookup(From, HashId, ServerId, {NextId, _NextPid})
 % Handle wrap-around of the ring...
 handle_key_lookup(From, HashId, ServerId, {NextId, NextPid}) when NextId < ServerId ->
     case (HashId > ServerId orelse HashId =< NextId) of
-        true -> 
-            From ! {NextId, NextPid};
-        false -> 
-            gen_server:cast(NextPid, {key_lookup, From, HashId})
+        true -> From ! {NextId, NextPid};
+        false -> gen_server:cast(NextPid, {key_lookup, From, HashId})
     end;
 
 handle_key_lookup(From, HashId, ServerId, {NextId, NextPid}) ->
     case (HashId > ServerId andalso HashId < NextId) of
-        true -> 
-            From ! {NextId, NextPid};
-        false -> 
-            gen_server:cast(NextPid, {key_lookup, From, HashId})
+        true -> From ! {NextId, NextPid};
+        false -> gen_server:cast(NextPid, {key_lookup, From, HashId})
     end.

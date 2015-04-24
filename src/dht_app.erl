@@ -5,14 +5,8 @@
 %% Application callbacks
 -export([start/0, start/2, stop/1]).
 
-
-
-
-%Helper
+%Helpers
 -export([first_node/0, second_node/0]).
-
-
-
 
 %% ===================================================================
 %% Application callbacks
@@ -27,10 +21,10 @@ start(_StartType, _StartArgs) ->
 stop(_State) ->
     ok.
 
+%% ===================================================================
+%% Helpers to get the app running in development mode
+%% ===================================================================
 
-
-
-%helper to get the app running in development mode
 first_node() ->
     application:start(dht),
     %sys:trace(dht_server, true),
@@ -40,7 +34,7 @@ first_node() ->
     {ok, Doc} = dht_server:fetch(Key),
     io:format(" *** KEY = ~p ***~n", [Key]).
 
-second_node() -> 
+second_node() ->
     application:start(dht),
     %sys:trace(dht_server, true),
     timer:sleep(100), % Wait for this node to join the ring
